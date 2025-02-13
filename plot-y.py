@@ -245,7 +245,7 @@ def main():
     plt.title('Right Index Y vs Time')
     plt.legend()
     plt.grid(True)
-    plt.savefig('./plot/right_index_plot.png')  # Save as an image
+    plt.savefig('./plot2/right_index_plot.png')  # Save as an image
     plt.close()
 
     # Plot 2: RIGHT_FOOT_INDEX over time
@@ -256,7 +256,7 @@ def main():
     plt.title('Right Foot Index Y vs Time')
     plt.legend()
     plt.grid(True)
-    plt.savefig('./plot/right_foot_index_plot.png')  # Save as an image
+    plt.savefig('./plot2/right_foot_index_plot.png')  # Save as an image
     plt.close()
 
 

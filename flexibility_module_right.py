@@ -1,9 +1,11 @@
 import cv2
 import mediapipe as mp
 import math
+import pdb
 
 mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
+pdb.set_trace()
 
 # PoseLandmark를 간단히 쓰기 위한 별칭
 PLM = mp_pose.PoseLandmark
@@ -111,8 +113,8 @@ def draw_right_side_and_angle(image, landmarks, angle_offset=10, visibility_th=0
         angle = compute_angle_knee(hip_x, hip_y, knee_x, knee_y, ankle_x, ankle_y)
         angle_text = f"Angle(Hip-Knee-Ankle): {angle:.1f} deg"
 
-        # (2) angle이 180 - offset 이상이면 '거의 일직선'
-        if angle >= (180 - angle_offset):
+        # (2) angle이 180 +- offset 이면 '거의 일직선'
+        if (180 - angle_offset) <= angle <= (180 + angle_offset):
             angle_text += " (Nearly Straight)"
 
             # (3) y좌표 차이 (foot-index)
@@ -194,10 +196,10 @@ def draw_right_side_and_angle(image, landmarks, angle_offset=10, visibility_th=0
 
 def main():
 
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(0)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1024)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 768)
-    cap.set(cv2.CAP_PROP_FPS, 27)
+    cap.set(cv2.CAP_PROP_FPS, 30)
 
     with mp_pose.Pose(
         min_detection_confidence=0.5,

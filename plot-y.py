@@ -1,3 +1,4 @@
+import os
 import cv2
 import mediapipe as mp
 import math
@@ -34,7 +35,6 @@ RIGHT_CONNECTIONS = [
     (PLM.RIGHT_WRIST, PLM.RIGHT_INDEX),
 ]
 
-
 def compute_angle_knee(hip_x, hip_y, knee_x, knee_y, ankle_x, ankle_y):
     """
     Knee(무릎)을 가운데로, (Hip->Knee)와 (Ankle->Knee) 두 벡터가 이루는 각도(도 단위)를 계산.
@@ -60,7 +60,6 @@ def compute_angle_knee(hip_x, hip_y, knee_x, knee_y, ankle_x, ankle_y):
 
     angle_rad = math.acos(cos_theta)
     angle_deg = math.degrees(angle_rad)
-
     return angle_deg
 
 
@@ -69,7 +68,7 @@ def draw_right_side_and_angle(image, landmarks, angle_offset=10, visibility_th=0
     1) 오른쪽 측면 랜드마크(점 + 연결선)를 파란색+흰색 테두리로 그린다.
     2) 각 점 옆에 (x, y) 픽셀 좌표를 표시한다.
     3) Hip-Knee-Ankle 사이각(= knee 각도)을 구해, 180도와 얼마나 가까운지 확인
-       - angle >= 180 - angle_offset 이면 'Nearly Straight'이라고 표시
+       - angle >= 180 - angle_offset 이면 'Nearly Straight'라고 표시
     4) foot index & hand index 의 y좌표 차이를 화면에 표시
     """
 
@@ -180,12 +179,15 @@ def main():
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 768)
     cap.set(cv2.CAP_PROP_FPS, 30)
 
-    # Lists to accumulate time, index y-values, foot y-values
-    times = []
+    # Create a folder for snapshot images (if it doesn't exist)
+    os.makedirs('snapshots', exist_ok=True)
+
+    # Lists to accumulate frame indices, index y-values, foot y-values
+    frame_indices = []
     right_index_ys = []
     right_foot_index_ys = []
 
-    start_time = time.time()
+    frame_count = 0
 
     with mp_pose.Pose(
         min_detection_confidence=0.5,
@@ -196,6 +198,11 @@ def main():
             if not success:
                 print("카메라를 찾을 수 없습니다.")
                 continue
+
+            frame_count += 1
+
+            # Rotate webcam frame if needed
+            frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
 
             # 거울 모드 (좌우 반전)
             frame = cv2.flip(frame, 1)
@@ -212,20 +219,23 @@ def main():
                 draw_right_side_and_angle(frame, landmarks, angle_offset=10, visibility_th=0.5)
 
                 # 2) 오른손 검지(right_index), 오른발 끝(right_foot_index)의 Y값 기록
-                #    visibility가 높은 경우만 기록해도 되고, 아래처럼 무조건 기록할 수도 있음.
+                #    (You may also want to check visibility if needed.)
                 right_index_lm = landmarks[PLM.RIGHT_INDEX.value]
                 right_foot_index_lm = landmarks[PLM.RIGHT_FOOT_INDEX.value]
 
-                current_time = time.time() - start_time
-
-                # 픽셀 단위로 변환
+                # Convert from normalized [0,1] to pixel
                 frame_h = frame.shape[0]
                 idx_y = right_index_lm.y * frame_h
                 ft_y  = right_foot_index_lm.y * frame_h
 
-                times.append(current_time)
+                frame_indices.append(frame_count)
                 right_index_ys.append(idx_y)
                 right_foot_index_ys.append(ft_y)
+
+            # Save each frame as an image
+            # For example: snapshots/frame_0001.png
+            save_path = f'snapshots/frame_{frame_count:04d}.png'
+            cv2.imwrite(save_path, frame)
 
             cv2.imshow('Right side with angle', frame)
             if cv2.waitKey(5) & 0xFF == 27:  # ESC 키
@@ -237,28 +247,33 @@ def main():
     # --------------------------------------------
     # After exiting the loop, save your two plots
     # --------------------------------------------
-    # Plot 1: RIGHT_INDEX over time
+
+    # Ensure the output plot folder exists (optional)
+    os.makedirs('./plot-nofilter', exist_ok=True)
+
+    # Plot 1: RIGHT_INDEX over frames
     plt.figure(figsize=(8, 4))
-    plt.plot(times, right_index_ys, color='blue', label='Right Index Y')
-    plt.xlabel('Time (s)')
+    plt.plot(frame_indices, right_index_ys, color='blue', label='Right Index Y')
+    plt.xlabel('Frame')
     plt.ylabel('Y position (pixels)')
-    plt.title('Right Index Y vs Time')
+    plt.title('Right Index Y vs Frame')
     plt.legend()
     plt.grid(True)
-    plt.savefig('./plot2/right_index_plot.png')  # Save as an image
+    plt.savefig('./plot-nofilter/right_index_plot.png')  # Save as an image
     plt.close()
 
-    # Plot 2: RIGHT_FOOT_INDEX over time
+    # Plot 2: RIGHT_FOOT_INDEX over frames
     plt.figure(figsize=(8, 4))
-    plt.plot(times, right_foot_index_ys, color='red', label='Right Foot Index Y')
-    plt.xlabel('Time (s)')
+    plt.plot(frame_indices, right_foot_index_ys, color='red', label='Right Foot Index Y')
+    plt.xlabel('Frame')
     plt.ylabel('Y position (pixels)')
-    plt.title('Right Foot Index Y vs Time')
+    plt.title('Right Foot Index Y vs Frame')
     plt.legend()
     plt.grid(True)
-    plt.savefig('./plot2/right_foot_index_plot.png')  # Save as an image
+    plt.savefig('./plot-nofilter/right_foot_index_plot.png')  # Save as an image
     plt.close()
 
+    print("Done! Plots saved to ./plot-nofilter/ and frames saved to ./snapshots/")
 
 if __name__ == "__main__":
     main()

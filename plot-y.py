@@ -104,7 +104,7 @@ def draw_right_side_and_angle(image, landmarks, angle_offset=10, visibility_th=0
 
         # (2) angle이 180 +- offset이면 'Nearly Straight'
         if (180 - angle_offset) <= angle <= (180 + angle_offset):
-            angle_text += " (Nearly Straight)"
+            int(angle_text) += " (Nearly Straight)"
 
             # (3) y좌표 차이 (foot-index)
             li_y = right_index_lm.y * h

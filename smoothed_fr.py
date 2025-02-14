@@ -47,7 +47,7 @@ def mov_avg_filter(n_frames, x_meas):
     n_frames.append(x_meas)  # Add the new entry
     return np.mean(n_frames), n_frames
 
-def draw_right_side_and_angle(image, landmarks, filtered_index_y, filtered_foot_y, angle_offset=10, visibility_th=0.5):
+def draw_right_side_and_angle(image, landmarks, filtered_index_y, filtered_foot_y, angle_offset=15, visibility_th=0.5):
     h, w, _ = image.shape
     white = (255, 255, 255)
     
@@ -69,7 +69,7 @@ def draw_right_side_and_angle(image, landmarks, filtered_index_y, filtered_foot_
         
         # Compute knee angle
         angle = compute_angle_knee(hip_x, hip_y, knee_x, knee_y, ankle_x, ankle_y)
-        angle_text = f"Angle: {angle:.1f}°"
+        angle_text = f"Angle: {angle:.0f}°"
         
         # Check if the angle is "nearly straight"
         if (180 - angle_offset) <= angle <= (180 + angle_offset):
@@ -77,7 +77,7 @@ def draw_right_side_and_angle(image, landmarks, filtered_index_y, filtered_foot_
 
             # finger - foot
             dy = (filtered_index_y - filtered_foot_y)*(0.26)  # 픽셀 단위 차이 * cm value
-            dy_text = f"Filtered Y diff: {dy:.1f} pixels"
+            dy_text = f"Filtered Y diff: {dy:.1f} cm"
 
 #  //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -165,9 +165,33 @@ def main():
                 mp_drawing.draw_landmarks(
                     frame,
                     results.pose_landmarks,
-                    mp_pose.POSE_CONNECTIONS,  # you can also use RIGHT_CONNECTIONS if you only want the right side
-                    landmark_drawing_spec=mp_drawing.DrawingSpec(color=(0, 255, 0), thickness=4, circle_radius=5),
-                    connection_drawing_spec=mp_drawing.DrawingSpec(color=(255, 0, 0), thickness=2, circle_radius=2)
+                    # mp_pose.POSE_CONNECTIONS,  # you can also use RIGHT_CONNECTIONS if you only want the right side
+                    # landmark_drawing_spec=mp_drawing.DrawingSpec(color=(255, 255, 255), thickness=4, circle_radius=5),
+                    # connection_drawing_spec=mp_drawing.DrawingSpec(color=(255, 0, 0), thickness=5, circle_radius=7)
+
+                    mp_pose.POSE_CONNECTIONS,
+                    landmark_drawing_spec=mp_drawing.DrawingSpec(
+                        color=(255, 255, 255),  # white
+                        thickness=7,
+                        circle_radius=6
+                    ),
+                    # keep or customize the connection_drawing_spec as needed
+                    connection_drawing_spec=mp_drawing.DrawingSpec(
+                        color=(255, 0, 0), 
+                        thickness=6
+                    )
+                )
+                mp_drawing.draw_landmarks(
+                    frame,
+                    results.pose_landmarks,
+                    mp_pose.POSE_CONNECTIONS,
+                    landmark_drawing_spec=mp_drawing.DrawingSpec(
+                        color=(255, 0, 0),   # blue
+                        thickness=-1,       # try "filled", or a large number if it doesn't work
+                        circle_radius=5
+                    ),
+                    # If you want to avoid re‐drawing connections, set connection_drawing_spec=None
+                    # connection_drawing_spec=None
                 )
                 
                 # 2) Draw angle info/text overlays

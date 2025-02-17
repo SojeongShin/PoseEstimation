@@ -2,7 +2,6 @@ import os
 import cv2
 import mediapipe as mp
 import math
-import time
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -11,7 +10,7 @@ mp_pose = mp.solutions.pose
 
 PLM = mp_pose.PoseLandmark
 
-# 오른쪽 측면 랜드마크 (optional if you want to manually connect only the right side)
+# 오른쪽 측면 랜드마크
 RIGHT_LANDMARKS = [
     PLM.RIGHT_SHOULDER,  # 12
     PLM.RIGHT_ELBOW,     # 14
@@ -24,7 +23,7 @@ RIGHT_LANDMARKS = [
     PLM.RIGHT_FOOT_INDEX # 32
 ]
 
-# 오른쪽 측면 연결 관계 (optional if you want to manually connect only the right side)
+# 오른쪽 측면 연결 관계
 RIGHT_CONNECTIONS = [
     (PLM.RIGHT_SHOULDER, PLM.RIGHT_ELBOW),
     (PLM.RIGHT_ELBOW, PLM.RIGHT_WRIST),
@@ -36,7 +35,7 @@ RIGHT_CONNECTIONS = [
     (PLM.RIGHT_WRIST, PLM.RIGHT_INDEX),
 ]
 
-# Moving average buffer size
+# Moving average buffer size -> No filter -> buffer size = 1
 BUFFER_SIZE = 3
 right_index_buffer = [0] * BUFFER_SIZE
 right_foot_index_buffer = [0] * BUFFER_SIZE
@@ -49,14 +48,14 @@ def mov_avg_filter(n_frames, x_meas):
 
 def draw_right_side_and_angle(image, landmarks, filtered_index_y, filtered_foot_y, angle_offset=15, visibility_th=0.5):
     h, w, _ = image.shape
-    white = (255, 255, 255)
+
+    angle_text = ""
+    dy_text = ""
     
     hip_lm = landmarks[PLM.RIGHT_HIP.value]
     knee_lm = landmarks[PLM.RIGHT_KNEE.value]
     ankle_lm = landmarks[PLM.RIGHT_ANKLE.value]
     
-    angle_text = ""
-    dy_text = ""
 
     # Check visibility before computing angles
     if (hip_lm.visibility > visibility_th and 
@@ -73,18 +72,17 @@ def draw_right_side_and_angle(image, landmarks, filtered_index_y, filtered_foot_
         
         # Check if the angle is "nearly straight"
         if (180 - angle_offset) <= angle <= (180 + angle_offset):
-            angle_text += " (Nearly Straight)"
+            angle_text += " (Straight)"
 
             # finger - foot
-            dy = (filtered_index_y - filtered_foot_y)*(0.092)  # 픽셀 단위 차이 * cm value
-            dy_text = f"Filtered Y diff: {dy:.1f} cm"
+            dy = (filtered_index_y - filtered_foot_y)*(0.092) + 8.5 # 픽셀 차이 * cm value + length of finger
+            dy_text = f"hand-feet Y diff: {dy:.2f} cm"
 
-#  //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
     # Draw text on the screen
     if angle_text:
-        cv2.putText(image, angle_text, (30, 40), cv2.FONT_HERSHEY_SIMPLEX, 1.0, white, 2, cv2.LINE_AA)
+        cv2.putText(image, angle_text, (30, 40), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 255), 2, cv2.LINE_AA)
     if dy_text:
         cv2.putText(image, dy_text, (30, 80), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 255), 2, cv2.LINE_AA)
 
@@ -105,14 +103,14 @@ def compute_angle_knee(hip_x, hip_y, knee_x, knee_y, ankle_x, ankle_y):
 
 def main():
     cap = cv2.VideoCapture(0)
-    # Adjust resolution and FPS as desired
+    # Adjust resolution and FPS
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 768)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1024)
     cap.set(cv2.CAP_PROP_FPS, 27)
     
     # Create directories if they don't exist
-    os.makedirs('snapshots', exist_ok=True)
-    os.makedirs('./333', exist_ok=True)
+    os.makedirs('./snapshots', exist_ok=True)
+    os.makedirs('./plot', exist_ok=True)
     
     frame_indices = []
     right_index_ys = []
@@ -168,8 +166,8 @@ def main():
                     results.pose_landmarks,
                     mp_pose.POSE_CONNECTIONS,
                     landmark_drawing_spec=mp_drawing.DrawingSpec(
-                        color=(255, 0, 0),   # blue
-                        thickness=-1,       # try "filled", or a large number if it doesn't work
+                        color=(255, 0, 0),   # BGR
+                        thickness=-1,       
                         circle_radius=10
                     ),
                     connection_drawing_spec=mp_drawing.DrawingSpec(
@@ -201,7 +199,7 @@ def main():
     plt.title('Filtered Right Index Y vs Frame')
     plt.legend()
     plt.grid(True)
-    plt.savefig('./333/right_index_filtered.png')
+    plt.savefig('./plot/right_index_filtered.png')
     plt.close()
     
     plt.figure(figsize=(8, 4))
@@ -211,10 +209,10 @@ def main():
     plt.title('Filtered Right Foot Index Y vs Frame')
     plt.legend()
     plt.grid(True)
-    plt.savefig('./333/right_foot_index_filtered.png')
+    plt.savefig('./plot/right_foot_index_filtered.png')
     plt.close()
     
-    print("Filtered data plots saved to ./no_filtered/")
+    print("Filtered data plots saved to ./plot/")
     print("Screenshots saved to ./snapshots/")
 
 if __name__ == "__main__":

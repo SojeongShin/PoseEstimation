@@ -112,7 +112,7 @@ def main():
     
     # Create directories if they don't exist
     os.makedirs('snapshots', exist_ok=True)
-    os.makedirs('./3w_filtered', exist_ok=True)
+    os.makedirs('./333', exist_ok=True)
     
     frame_indices = []
     right_index_ys = []
@@ -201,7 +201,7 @@ def main():
     plt.title('Filtered Right Index Y vs Frame')
     plt.legend()
     plt.grid(True)
-    plt.savefig('./3w_filtered/right_index_filtered.png')
+    plt.savefig('./333/right_index_filtered.png')
     plt.close()
     
     plt.figure(figsize=(8, 4))
@@ -211,7 +211,7 @@ def main():
     plt.title('Filtered Right Foot Index Y vs Frame')
     plt.legend()
     plt.grid(True)
-    plt.savefig('./3w_filtered/right_foot_index_filtered.png')
+    plt.savefig('./333/right_foot_index_filtered.png')
     plt.close()
     
     print("Filtered data plots saved to ./no_filtered/")

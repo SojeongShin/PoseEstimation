@@ -76,7 +76,7 @@ def draw_right_side_and_angle(image, landmarks, filtered_index_y, filtered_foot_
             angle_text += " (Nearly Straight)"
 
             # finger - foot
-            dy = (filtered_index_y - filtered_foot_y)*(0.26)  # 픽셀 단위 차이 * cm value
+            dy = (filtered_index_y - filtered_foot_y)*(0.092)  # 픽셀 단위 차이 * cm value
             dy_text = f"Filtered Y diff: {dy:.1f} cm"
 
 #  //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -112,7 +112,7 @@ def main():
     
     # Create directories if they don't exist
     os.makedirs('snapshots', exist_ok=True)
-    os.makedirs('./plot_filtered', exist_ok=True)
+    os.makedirs('./3w_filtered', exist_ok=True)
     
     frame_indices = []
     right_index_ys = []
@@ -162,25 +162,7 @@ def main():
                 right_foot_index_ys.append(filtered_ft_y)
                 
                 # 1) Draw the full skeleton from Mediapipe
-                mp_drawing.draw_landmarks(
-                    frame,
-                    results.pose_landmarks,
-                    # mp_pose.POSE_CONNECTIONS,  # you can also use RIGHT_CONNECTIONS if you only want the right side
-                    # landmark_drawing_spec=mp_drawing.DrawingSpec(color=(255, 255, 255), thickness=4, circle_radius=5),
-                    # connection_drawing_spec=mp_drawing.DrawingSpec(color=(255, 0, 0), thickness=5, circle_radius=7)
-
-                    mp_pose.POSE_CONNECTIONS,
-                    landmark_drawing_spec=mp_drawing.DrawingSpec(
-                        color=(255, 255, 255),  # white
-                        thickness=7,
-                        circle_radius=6
-                    ),
-                    # keep or customize the connection_drawing_spec as needed
-                    connection_drawing_spec=mp_drawing.DrawingSpec(
-                        color=(255, 0, 0), 
-                        thickness=6
-                    )
-                )
+                
                 mp_drawing.draw_landmarks(
                     frame,
                     results.pose_landmarks,
@@ -188,10 +170,12 @@ def main():
                     landmark_drawing_spec=mp_drawing.DrawingSpec(
                         color=(255, 0, 0),   # blue
                         thickness=-1,       # try "filled", or a large number if it doesn't work
-                        circle_radius=5
+                        circle_radius=10
                     ),
-                    # If you want to avoid re‐drawing connections, set connection_drawing_spec=None
-                    # connection_drawing_spec=None
+                    connection_drawing_spec=mp_drawing.DrawingSpec(
+                        color=(255, 0, 0), 
+                        thickness=8
+                    )
                 )
                 
                 # 2) Draw angle info/text overlays
@@ -217,7 +201,7 @@ def main():
     plt.title('Filtered Right Index Y vs Frame')
     plt.legend()
     plt.grid(True)
-    plt.savefig('./plot_filtered/right_index_filtered.png')
+    plt.savefig('./3w_filtered/right_index_filtered.png')
     plt.close()
     
     plt.figure(figsize=(8, 4))
@@ -227,10 +211,10 @@ def main():
     plt.title('Filtered Right Foot Index Y vs Frame')
     plt.legend()
     plt.grid(True)
-    plt.savefig('./plot_filtered/right_foot_index_filtered.png')
+    plt.savefig('./3w_filtered/right_foot_index_filtered.png')
     plt.close()
     
-    print("Filtered data plots saved to ./plot_filtered/")
+    print("Filtered data plots saved to ./no_filtered/")
     print("Screenshots saved to ./snapshots/")
 
 if __name__ == "__main__":

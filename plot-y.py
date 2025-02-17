@@ -104,7 +104,7 @@ def draw_right_side_and_angle(image, landmarks, angle_offset=10, visibility_th=0
 
         # (2) angle이 180 +- offset이면 'Nearly Straight'
         if (180 - angle_offset) <= angle <= (180 + angle_offset):
-            int(angle_text) += " (Nearly Straight)"
+            angle_text += " (Nearly Straight)"
 
             # (3) y좌표 차이 (foot-index)
             li_y = right_index_lm.y * h
@@ -124,9 +124,9 @@ def draw_right_side_and_angle(image, landmarks, angle_offset=10, visibility_th=0
         cx, cy = int(lm.x * w), int(lm.y * h)
 
         # 1) 흰색 테두리 원
-        cv2.circle(image, (cx, cy), 12, white, 6)
+        cv2.circle(image, (cx, cy), 6, white, 6)
         # 2) 파란색 꽉 채운 원
-        cv2.circle(image, (cx, cy), 7, line_color, -1)
+        cv2.circle(image, (cx, cy), 5, line_color, -1)
 
         # 3) (cx, cy) 텍스트 표시
         text_str = f"({cx}, {cy})"
@@ -174,7 +174,7 @@ def draw_right_side_and_angle(image, landmarks, angle_offset=10, visibility_th=0
 
 
 def main():
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture('/home/sojeong/Documents/GitHub/PoseEstimation/video/side_yoga.mp4')
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1024)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 768)
     cap.set(cv2.CAP_PROP_FPS, 30)

@@ -17,7 +17,7 @@ app = FaceAnalysis(
 app.prepare(ctx_id=0, det_size=(224, 224))
 
 # 3. Registration / detection thresholds
-SIM_THRESHOLD = 0.5  # If cos_sim > 0.5, we say "Same Person"
+SIM_THRESHOLD = 0.3  # If cos_sim > 0.5, we say "Same Person" -> i think setting the threshold as 0.3 would be fine.
 
 # 4. Global variables
 registered_embedding = None  # We'll set this once after the 3-second capture

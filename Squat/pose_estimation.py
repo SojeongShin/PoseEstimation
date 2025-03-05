@@ -18,6 +18,10 @@ mp_pose = mp.solutions.pose
 pose = mp_pose.Pose()
 
 cap = cv2.VideoCapture(0)
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, 768)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1024)
+cap.set(cv2.CAP_PROP_FPS, 27)
+
 squat_count = 0
 in_squat_position = False
 
@@ -30,6 +34,7 @@ while cap.isOpened():
     image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     results = pose.process(image)
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+    
     
     if results.pose_landmarks:
         landmarks = results.pose_landmarks.landmark

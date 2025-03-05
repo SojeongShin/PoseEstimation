@@ -40,7 +40,7 @@ while cap.isOpened():
         landmarks = results.pose_landmarks.landmark
         
         def is_visible(landmark):
-            return landmark.visibility > 0.5
+            return landmark.visibility > 0.8
         
         if all(is_visible(landmarks[lm]) for lm in [
             mp_pose.PoseLandmark.NOSE,

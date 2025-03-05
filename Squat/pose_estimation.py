@@ -17,84 +17,70 @@ def calculate_angle(a, b, c):
 mp_pose = mp.solutions.pose
 pose = mp_pose.Pose()
 
+# Load Video Instead of Webcam
 cap = cv2.VideoCapture(0)
+
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 768)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1024)
 cap.set(cv2.CAP_PROP_FPS, 27)
 
 squat_count = 0
-in_squat_position = False
+state = 0  # 0 = Standing, 1 = Squatting
 
 while cap.isOpened():
     ret, frame = cap.read()
     if not ret:
         break
     
-    frame = cv2.flip(frame, 1)
+    frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+
     image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     results = pose.process(image)
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
     
-    
     if results.pose_landmarks:
         landmarks = results.pose_landmarks.landmark
         
-        def is_visible(landmark):
-            return landmark.visibility > 0.8
+        left_hip = landmarks[mp_pose.PoseLandmark.LEFT_HIP]
+        right_hip = landmarks[mp_pose.PoseLandmark.RIGHT_HIP]
+        left_knee = landmarks[mp_pose.PoseLandmark.LEFT_KNEE]
+        right_knee = landmarks[mp_pose.PoseLandmark.RIGHT_KNEE]
+        left_ankle = landmarks[mp_pose.PoseLandmark.LEFT_ANKLE]
+        right_ankle = landmarks[mp_pose.PoseLandmark.RIGHT_ANKLE]
+
+        left_shoulder = landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER]
+        right_shoulder = landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER]
+
+        left_knee_angle = calculate_angle([left_hip.x, left_hip.y],
+                                          [left_knee.x, left_knee.y],
+                                          [left_ankle.x, left_ankle.y])
+        right_knee_angle = calculate_angle([right_hip.x, right_hip.y],
+                                           [right_knee.x, right_knee.y],
+                                           [right_ankle.x, right_ankle.y])
         
-        if all(is_visible(landmarks[lm]) for lm in [
-            mp_pose.PoseLandmark.NOSE,
-            mp_pose.PoseLandmark.LEFT_EYE,
-            mp_pose.PoseLandmark.RIGHT_EYE,
-            mp_pose.PoseLandmark.LEFT_SHOULDER,
-            mp_pose.PoseLandmark.RIGHT_SHOULDER,
-            mp_pose.PoseLandmark.LEFT_HIP,
-            mp_pose.PoseLandmark.RIGHT_HIP,
-            mp_pose.PoseLandmark.LEFT_KNEE,
-            mp_pose.PoseLandmark.RIGHT_KNEE,
-            mp_pose.PoseLandmark.LEFT_ANKLE,
-            mp_pose.PoseLandmark.RIGHT_ANKLE
-        ]):
-            nose = landmarks[mp_pose.PoseLandmark.NOSE]
-            left_eye = landmarks[mp_pose.PoseLandmark.LEFT_EYE]
-            right_eye = landmarks[mp_pose.PoseLandmark.RIGHT_EYE]
-            left_shoulder = landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER]
-            right_shoulder = landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER]
-            left_hip = landmarks[mp_pose.PoseLandmark.LEFT_HIP]
-            right_hip = landmarks[mp_pose.PoseLandmark.RIGHT_HIP]
-            left_knee = landmarks[mp_pose.PoseLandmark.LEFT_KNEE]
-            right_knee = landmarks[mp_pose.PoseLandmark.RIGHT_KNEE]
-            left_ankle = landmarks[mp_pose.PoseLandmark.LEFT_ANKLE]
-            right_ankle = landmarks[mp_pose.PoseLandmark.RIGHT_ANKLE]
-            
-            # 얼굴 정면 확인
-            face_check = (abs(nose.x - left_eye.x) < abs(nose.x - right_eye.x) * 1.5 and
-                          abs(nose.x - right_eye.x) < abs(nose.x - left_eye.x) * 1.5)
-            
-            # 등 일자 확인
-            back_check = (abs(left_shoulder.x - left_hip.x) < 50 and
-                          abs(right_shoulder.x - right_hip.x) < 50)
-            
-            # 무릎 각도 계산
-            left_knee_angle = calculate_angle([left_hip.x, left_hip.y],
-                                              [left_knee.x, left_knee.y],
-                                              [left_ankle.x, left_ankle.y])
-            right_knee_angle = calculate_angle([right_hip.x, right_hip.y],
-                                               [right_knee.x, right_knee.y],
-                                               [right_ankle.x, right_ankle.y])
-            
-            # 스쿼트 감지
-            if face_check and back_check and left_knee_angle >= 45 and right_knee_angle >= 45:
-                in_squat_position = True
-            
-            # 스쿼트 초기화 조건 확인 (완전히 선 자세)
-            if in_squat_position and left_knee_angle < 10 and right_knee_angle < 10:
-                squat_count += 1
-                in_squat_position = False
-                print(f"Squat Count: {squat_count}")
-            
-            # 랜드마크 시각화
-            mp.solutions.drawing_utils.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
+        # start squat
+        if state == 0 and left_knee_angle >= 170 and right_knee_angle >= 170:
+            state = 0
+
+        # Detect Squat
+        elif state == 0 and left_knee_angle <= 125 and right_knee_angle <= 125:
+            state = 1  # Move to squat position
+
+        # Detect Squat Completion & Increase Count
+        elif state == 1 and left_knee_angle >= 170 and right_knee_angle >= 170:
+            state = 0
+            squat_count += 1
+            print(f"Squat Count: {squat_count}")
+
+        # Display knee angles
+        cv2.putText(image, f'{int(left_knee_angle)}°',
+                    (int(left_knee.x * image.shape[1]), int(left_knee.y * image.shape[0]) - 10),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2, cv2.LINE_AA)
+        cv2.putText(image, f'{int(right_knee_angle)}°',
+                    (int(right_knee.x * image.shape[1]), int(right_knee.y * image.shape[0]) - 10),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2, cv2.LINE_AA)
+
+        mp.solutions.drawing_utils.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
     
     cv2.putText(image, f'Squat Count: {squat_count}', (30, 50),
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)

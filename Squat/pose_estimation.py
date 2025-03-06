@@ -2,6 +2,7 @@ import cv2
 import mediapipe as mp
 import numpy as np
 
+# 내적으로 관절 각도를 구함(라디안 -> 도)
 def calculate_angle(a, b, c):
     a = np.array(a)
     b = np.array(b)
@@ -17,7 +18,7 @@ def calculate_angle(a, b, c):
 mp_pose = mp.solutions.pose
 pose = mp_pose.Pose()
 
-# Load Video Instead of Webcam
+# Webcam 열기 
 cap = cv2.VideoCapture(0)
 
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 768)
@@ -31,13 +32,14 @@ while cap.isOpened():
     ret, frame = cap.read()
     if not ret:
         break
-    
-    frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
 
+    # 기기 카메라 화면이 돌아가 있으므로 회전 
+    frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
     image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     results = pose.process(image)
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
     
+    # pose 모델에서 랜드마크 추출 
     if results.pose_landmarks:
         landmarks = results.pose_landmarks.landmark
         
@@ -51,6 +53,7 @@ while cap.isOpened():
         left_shoulder = landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER]
         right_shoulder = landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER]
 
+        # 각도 계산 
         left_knee_angle = calculate_angle([left_hip.x, left_hip.y],
                                           [left_knee.x, left_knee.y],
                                           [left_ankle.x, left_ankle.y])

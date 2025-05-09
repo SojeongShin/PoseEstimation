@@ -34,7 +34,7 @@ while cap.isOpened():
         break
 
     # 기기 카메라 화면이 돌아가 있으므로 회전 
-    frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+    # frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
     image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     results = pose.process(image)
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)

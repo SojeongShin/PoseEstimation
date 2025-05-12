@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 # === Load camera parameters ===
-intrin = np.load("intrinsic.npz")
+intrin = np.load("/home/sojeong/Documents/GitHub/PoseEstimation/HightMeasurement/cameraCali/intrinsic_calibration_result.npz")
 K = intrin["K"]
 dist = intrin["dist"]
 
@@ -28,7 +28,7 @@ if ids is not None:
         cv2.circle(img, tuple(center), 5, (255, 0, 0), -1)
 
         # Draw coordinate axes (red=X, green=Y, blue=Z)
-        cv2.aruco.drawAxis(img, K, dist, rvecs[i], tvecs[i], 0.1)  # 0.1m length
+        cv2.drawFrameAxes(img, K, dist, rvecs[i], tvecs[i], 0.1)  # 0.1m length
 
     cv2.imshow("Detected IDs with Axes", img)
     cv2.waitKey(0)

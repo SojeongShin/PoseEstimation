@@ -7,7 +7,7 @@ K = intrin["K"]
 dist = intrin["dist"]
 
 # === Load image ===
-img = cv2.imread("/home/sojeong/Documents/GitHub/PoseEstimation/HightMeasurement/Aruco/arucoMat.jpg")
+img = cv2.imread("/home/sojeong/Documents/GitHub/PoseEstimation/HightMeasurement/cameraCali/rotated_frames/frame_0000.jpg")
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
 # === Detect markers ===

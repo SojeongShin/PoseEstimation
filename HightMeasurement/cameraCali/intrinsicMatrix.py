@@ -2,6 +2,17 @@ import cv2
 import numpy as np
 import glob
 
+import os
+
+# 폴더 생성
+output_dir = "cali_frame"
+os.makedirs(output_dir, exist_ok=True)
+
+# 저장한 이미지 수 초기화
+saved_count = 0
+
+
+
 # 체스보드 설정
 chessboard_size = (9, 6)  # 내부 코너 수 (행, 열)
 square_size = 25  # mm 단위 (실제 체스보드 정사각형 한 칸의 길이)
@@ -15,7 +26,7 @@ objpoints = []  # 3D point in real world
 imgpoints = []  # 2D points in image plane
 
 # 캘리브레이션 이미지 불러오기
-images = glob.glob('./valid_images/*.jpg')
+images = glob.glob('HightMeasurement/cameraCali/valid_images/*.jpg')
 
 for fname in images:
     img = cv2.imread(fname)
@@ -32,8 +43,17 @@ for fname in images:
         imgpoints.append(corners2)
         # 시각화
         img = cv2.drawChessboardCorners(img, chessboard_size, corners2, ret)
+
+        # 이미지 저장
+        if saved_count < 10:
+            save_path = os.path.join(output_dir, f"cali_{saved_count+1:02d}.jpg")
+            cv2.imwrite(save_path, img)
+            saved_count += 1
+
+        # 시각화
         cv2.imshow('img', img)
         cv2.waitKey(100)
+
 
 cv2.destroyAllWindows()
 
@@ -99,4 +119,4 @@ np.savez(
     reprojection_error_mm=error_mm
 )
 
-print("📁 결과 저장 완료: intrinsic_calibration_result.npz")
+print("📁 결과 저장 완료: intrinsic_calibration_forReport.npz")

@@ -17,5 +17,5 @@ for marker_id in range(4):
     marker_img = np.zeros((marker_size, marker_size), dtype=np.uint8)
     aruco.generateImageMarker(aruco_dict, marker_id, marker_size, marker_img, 1)
     cv2.imwrite(f"aruco_markers/aruco5x5_100_id{marker_id}.png", marker_img)
-
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
 print("✅ 마커 4개 생성 완료 (generateImageMarker 사용)")

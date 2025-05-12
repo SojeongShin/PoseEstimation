@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 # === STEP 1: Load intrinsic parameters ===
-intrinsic = np.load('HightMeasurement/cameraCali/intrinsic_calibration_result.npz')
+intrinsic = np.load('/home/sojeong/Documents/GitHub/PoseEstimation/HightMeasurement/cameraCali/intrinsic_calibration_result.npz')
 K = intrinsic['K']
 dist = intrinsic['dist']
 

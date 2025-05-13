@@ -7,7 +7,7 @@ K = intrinsic['K']
 dist = intrinsic['dist']
 
 # === STEP 2: Load image and get 4 image points from clicks ===
-image = cv2.imread('/Users/sojeongshin/Documents/GitHub/PoseEstimation/HightMeasurement/Aruco/arucoMat.jpg')  # 📸 바닥 매트가 있는 이미지
+image = cv2.imread("/home/sojeong/Documents/GitHub/PoseEstimation/HightMeasurement/cameraCali/rotated_frames/frame_0000.jpg")
 clicked_points = []
 
 def mouse_callback(event, x, y, flags, param):
@@ -62,7 +62,7 @@ print("📐 Reprojection errors per point (pixels):", errors)
 print("📏 Mean reprojection error:", np.mean(errors))
 
 # === STEP 7: Visual check ===
-image_vis = cv2.imread('/Users/sojeongshin/Documents/GitHub/PoseEstimation/HightMeasurement/Aruco/arucoMat.jpg')
+image_vis = cv2.imread("/home/sojeong/Documents/GitHub/PoseEstimation/HightMeasurement/cameraCali/rotated_frames/frame_0000.jpg")
 for (u, v) in image_points:
     cv2.circle(image_vis, (int(u), int(v)), 5, (0, 255, 0), -1)  # original (green)
 for (u, v) in projected:

@@ -32,8 +32,8 @@ image_points = np.array(clicked_points, dtype=np.float32)
 object_points = np.array([
     [0, 0, 0],
     [1830, 0, 0],
-    [1260, 700, 0],
-    [500, 700, 0]
+    [1270, 515, 0],
+    [570, 515, 0]
 ], dtype=np.float32)
 
 # === STEP 4: Solve PnP ===

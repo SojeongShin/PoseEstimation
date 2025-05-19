@@ -12,15 +12,15 @@ extrin = np.load("/home/sojeong/Documents/GitHub/PoseEstimation/HightMeasurement
 extrinsic_matrix = extrin["extrinsic_matrix"]  # shape: (3, 4)
 
 # Split into R and t
-R = extrinsic_matrix[:, :3]  # (3x3)
-t = extrinsic_matrix[:, 3].reshape(3, 1)  # (3x1)
+R = extrinsic_matrix[:, :3]
+t = extrinsic_matrix[:, 3].reshape(3, 1)
 
-# === Inverse rotation matrix and camera position ===
+# === Inverse rotation and camera position ===
 R_inv = np.linalg.inv(R)
-C_world = -R_inv @ t  # 카메라 월드 위치 (3x1)
+C_world = -R_inv @ t  # 카메라 월드 좌표 (3x1)
 
 # === Load image ===
-img = cv2.imread("/home/sojeong/Documents/GitHub/PoseEstimation/HightMeasurement/mat-pic/stand/jmin/frame_0724.jpg")
+img = cv2.imread("/home/sojeong/Documents/GitHub/PoseEstimation/HightMeasurement/mat-pic/stand/stand-sj-Te.jpg")
 h, w = img.shape[:2]
 
 # === Run Mediapipe Pose ===
@@ -39,42 +39,41 @@ if results.pose_landmarks:
     u_feet, v_feet = (x_min + x_max) // 2, y_max
     u_head, v_head = (x_min + x_max) // 2, y_min
 
-    def compute_world_point(u, v, s_override=None, force_z0=False):
+    def ray_direction(u, v):
         uv1 = np.array([[u], [v], [1]])
         d_cam = np.linalg.inv(K) @ uv1
         d_world = R_inv @ d_cam
+        d_world = d_world / np.linalg.norm(d_world)  # 정규화 (선택적)
+        return d_world
 
-        if force_z0:
-            s = -C_world[2, 0] / d_world[2, 0]
-        elif s_override is not None:
-            s = s_override
-        else:
-            raise ValueError("Either force_z0=True or s_override must be provided")
+    # 발 ray로 s 계산 (z=0에서 교차하도록)
+    d_feet = ray_direction(u_feet, v_feet)
+    s_feet = -C_world[2, 0] / d_feet[2, 0]
 
-        return (C_world + s * d_world).ravel(), s
+    # 머리 ray
+    d_head = ray_direction(u_head, v_head)
 
-    # 발 위치: z=0에 맞추기
-    feet_world, s_feet = compute_world_point(u_feet, v_feet, force_z0=True)
+    # 머리의 월드 좌표
+    head_world = C_world + s_feet * d_head
+    Z_head = head_world[2]
 
-    # 머리 위치: 발에서 구한 s값 사용
-    head_world, _ = compute_world_point(u_head, v_head, s_override=s_feet)
-
-    # === Height = 머리 z - 발 z
-    height_mm = head_world[2] - feet_world[2]
-    print(f"Estimated Height: {height_mm:.1f} mm")
+    # 발은 z=0이므로 키 = 머리의 z
+    height_mm = float(Z_head)
+    print(f"Estimated Height (using ray + camera height): {height_mm:.1f} mm")
+    
 
     # === Visualization
     annotated_img = img.copy()
     cv2.rectangle(annotated_img, (x_min, y_min), (x_max, y_max), (0, 255, 0), 2)
-    cv2.circle(annotated_img, (u_head, v_head), 5, (255, 0, 0), -1)  # 머리: 파란색
-    cv2.circle(annotated_img, (u_feet, v_feet), 5, (0, 0, 255), -1)  # 발: 빨간색
+    cv2.circle(annotated_img, (u_head, v_head), 5, (255, 0, 0), -1)  # 머리
+    cv2.circle(annotated_img, (u_feet, v_feet), 5, (0, 0, 255), -1)  # 발
     cv2.putText(annotated_img,
                 f"Estimated Height: {height_mm:.1f} mm",
                 (x_min, max(y_min - 10, 30)),
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.8, (0, 0, 255), 2)
 
-    # === Show and save result
+    # === Show and save
     cv2.imshow("Estimated Height", annotated_img)
     cv2.imwrite("output.jpg", annotated_img)
     cv2.waitKey(0)

@@ -18,7 +18,7 @@ R_inv = np.linalg.inv(R)
 C_world = -R_inv @ t  # shape: (3, 1)
 
 # === Load image and (optional) undistort ===
-img = cv2.imread("/home/sojeong/Documents/GitHub/PoseEstimation/HightMeasurement/mat-pic/stand/stand-sj-r.jpg")
+img = cv2.imread("/home/sojeong/Documents/GitHub/PoseEstimation/HightMeasurement/ref/shu/measuring.jpg")
 h, w = img.shape[:2]
 # Uncomment if lens distortion is strong:
 
@@ -28,7 +28,7 @@ segmentor = mp_selfie_segmentation.SelfieSegmentation(model_selection=1)
 results = segmentor.process(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
 
 # === Threshold segmentation mask ===
-CONFIDENCE_THRESHOLD = 0.8
+CONFIDENCE_THRESHOLD = 0.5
 mask = (results.segmentation_mask > CONFIDENCE_THRESHOLD).astype(np.uint8) * 255
 
 ys, xs = np.where(mask > 0)

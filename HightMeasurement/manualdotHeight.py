@@ -17,7 +17,7 @@ R_inv = np.linalg.inv(R)
 C_world = -R_inv @ t
 
 # === Load image
-img = cv2.imread("/Users/sojeongshin/Documents/GitHub/PoseEstimation/HightMeasurement/ref/sj/O.jpg")
+img = cv2.imread("/Users/sojeongshin/Documents/GitHub/PoseEstimation/HightMeasurement/ref/sj/back.jpg")
 clone = img.copy()
 clicks = []
 
@@ -47,6 +47,8 @@ def ray_direction(u, v):
     d_cam = np.linalg.inv(K) @ uv1
     d_world = R_inv @ d_cam
     return d_world / np.linalg.norm(d_world)
+
+
 
 # === Compute rays
 d_feet = ray_direction(u_feet, v_feet)

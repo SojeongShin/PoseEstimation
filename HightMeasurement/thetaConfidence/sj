@@ -36,3 +36,45 @@
  -> θ: 73.38 deg | Height: 1707.5 mm
 [5/5] Processing: r.jpg
  -> θ: 72.90 deg | Height: 1714.2 mm
+
+ (sy) 184.6
+[1/5] Processing: L.jpg
+/home/sojeong/Documents/GitHub/PoseEstimation/HightMeasurement/thetaConfidence/plottingPerFoler.py:37: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  cos_theta = float((d_head.T @ z_axis) / np.linalg.norm(d_head))
+ -> θ: 70.59 deg | Height: 1824.5 mm
+[2/5] Processing: O.jpg
+ -> θ: 64.41 deg | Height: 1834.0 mm
+[3/5] Processing: back.jpg
+ -> θ: 70.57 deg | Height: 1824.4 mm
+[4/5] Processing: measuring.jpg
+ -> θ: 66.69 deg | Height: 1846.9 mm
+[5/5] Processing: r.jpg
+ -> θ: 70.37 deg | Height: 1838.5 mm
+
+ (hw) 166.6
+[1/5] Processing: L.jpg
+/home/sojeong/Documents/GitHub/PoseEstimation/HightMeasurement/thetaConfidence/plottingPerFoler.py:37: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  cos_theta = float((d_head.T @ z_axis) / np.linalg.norm(d_head))
+ -> θ: 74.34 deg | Height: 1664.4 mm
+[2/5] Processing: O.jpg
+ -> θ: 68.72 deg | Height: 1686.7 mm
+[3/5] Processing: back.jpg
+ -> θ: 74.30 deg | Height: 1679.0 mm
+[4/5] Processing: measuring.jpg
+ -> θ: 73.09 deg | Height: 1672.9 mm
+[5/5] Processing: r.jpg
+ -> θ: 74.00 deg | Height: 1682.3 mm
+
+ (shu) 158.5
+[1/5] Processing: L.jpg
+/home/sojeong/Documents/GitHub/PoseEstimation/HightMeasurement/thetaConfidence/plottingPerFoler.py:37: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  cos_theta = float((d_head.T @ z_axis) / np.linalg.norm(d_head))
+ -> θ: 75.72 deg | Height: 1592.1 mm
+[2/5] Processing: O.jpg
+ -> θ: 70.76 deg | Height: 1626.6 mm
+[3/5] Processing: back.jpg
+ -> θ: 75.27 deg | Height: 1601.9 mm
+[4/5] Processing: measuring.jpg
+ -> θ: 74.03 deg | Height: 1606.9 mm
+[5/5] Processing: r.jpg
+ -> θ: 75.46 deg | Height: 1606.6 mm

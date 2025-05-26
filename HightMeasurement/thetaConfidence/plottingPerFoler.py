@@ -4,11 +4,11 @@ import os
 import matplotlib.pyplot as plt
 
 # === Load intrinsic and extrinsic parameters ===
-intrin = np.load("/Users/sojeongshin/Documents/GitHub/PoseEstimation/HightMeasurement/cameraCali/intrinsic_calibration_result.npz")
+intrin = np.load("/home/sojeong/Documents/GitHub/PoseEstimation/HightMeasurement/cameraCali/intrinsic_calibration_result.npz")
 K = intrin["K"]
 dist = intrin["dist"]
 
-extrin = np.load("/Users/sojeongshin/Documents/GitHub/PoseEstimation/HightMeasurement/final_extrinsic_calibration.npz")
+extrin = np.load("/home/sojeong/Documents/GitHub/PoseEstimation/HightMeasurement/final_extrinsic_calibration.npz")
 extrinsic_matrix = extrin["extrinsic_matrix"]
 R = extrinsic_matrix[:, :3]
 t = extrinsic_matrix[:, 3].reshape(3, 1)
@@ -64,7 +64,7 @@ def get_clicks(img):
     return sorted(clicks, key=lambda pt: pt[1])  # 머리가 위쪽
 
 # === Main Loop ===
-image_dir = "/Users/sojeongshin/Documents/GitHub/PoseEstimation/HightMeasurement/ref/ab"  # 이미지 폴더 경로
+image_dir = "/home/sojeong/Documents/GitHub/PoseEstimation/HightMeasurement/ref/shu"  # 이미지 폴더 경로
 image_files = sorted([f for f in os.listdir(image_dir) if f.endswith(".jpg")])
 
 theta_list = []

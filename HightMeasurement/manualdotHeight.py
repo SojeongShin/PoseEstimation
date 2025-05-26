@@ -17,7 +17,7 @@ R_inv = np.linalg.inv(R)
 C_world = -R_inv @ t
 
 # === Load image
-img = cv2.imread("/Users/sojeongshin/Documents/GitHub/PoseEstimation/HightMeasurement/ref/sj/back.jpg")
+img = cv2.imread("/Users/sojeongshin/Documents/GitHub/PoseEstimation/HightMeasurement/ref/sy/back.jpg")
 clone = img.copy()
 clicks = []
 

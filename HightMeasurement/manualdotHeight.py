@@ -61,8 +61,15 @@ head_world = (C_world + s_feet * d_head).ravel()
 # === Height (z축 기준)
 height_mm = head_world[2] - feet_world[2]
 
+# === Compute theta: angle between head ray and z-axis
+z_axis = np.array([[0], [0], [1]])
+cos_theta = float((d_head.T @ z_axis) / np.linalg.norm(d_head))
+theta_deg = np.degrees(np.arccos(np.clip(cos_theta, -1.0, 1.0)))
+
+
 # === Print results
 print(f"Height: {height_mm:.1f} mm")
+print(f"Theta (angle with z-axis): {theta_deg:.2f} degrees")
 
 print("Camera position (C_world) in mm:")
 print("X: {:.2f} mm".format(C_world[0, 0]))

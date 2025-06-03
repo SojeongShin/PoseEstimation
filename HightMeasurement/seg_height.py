@@ -5,11 +5,11 @@ from PIL import Image
 from torchvision.models.segmentation import deeplabv3_resnet50, DeepLabV3_ResNet50_Weights
 
 # === Load intrinsic & extrinsic parameters ===
-intrin = np.load("/Users/sojeongshin/Documents/GitHub/PoseEstimation/HightMeasurement/cameraCali/intrinsic_calibration_result.npz")
+intrin = np.load("/home/sojeong/Documents/GitHub/PoseEstimation/HightMeasurement/cameraCali/intrinsic_calibration_result.npz")
 K = intrin["K"]
 dist = intrin["dist"]
 
-extrin = np.load("/Users/sojeongshin/Documents/GitHub/PoseEstimation/HightMeasurement/final_extrinsic_calibration.npz")
+extrin = np.load("/home/sojeong/Documents/GitHub/PoseEstimation/HightMeasurement/final_extrinsic_calibration.npz")
 extrinsic_matrix = extrin["extrinsic_matrix"]
 R = extrinsic_matrix[:, :3]
 t = extrinsic_matrix[:, 3].reshape(3, 1)
@@ -18,7 +18,7 @@ R_inv = np.linalg.inv(R)
 C_world = -R_inv @ t  # camera center in world coordinates
 
 # === Load image ===
-img_path = "/Users/sojeongshin/Documents/GitHub/PoseEstimation/HightMeasurement/ref/shu/measuring.jpg"
+img_path = "/home/sojeong/Documents/GitHub/PoseEstimation/HightMeasurement/ref/sj2/stand-sj-back.jpg"
 img_cv = cv2.imread(img_path)
 img_pil = Image.open(img_path).convert("RGB")
 

@@ -64,7 +64,7 @@ def get_clicks(img):
     return sorted(clicks, key=lambda pt: pt[1])  # 머리가 위쪽
 
 # === Main Loop ===
-image_dir = "/home/sojeong/Documents/GitHub/PoseEstimation/HightMeasurement/ref/shu"  # 이미지 폴더 경로
+image_dir = "/home/sojeong/Documents/GitHub/PoseEstimation/HightMeasurement/ref/ab"  # 이미지 폴더 경로
 image_files = sorted([f for f in os.listdir(image_dir) if f.endswith(".jpg")])
 
 theta_list = []

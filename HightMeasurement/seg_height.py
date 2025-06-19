@@ -18,7 +18,7 @@ R_inv = np.linalg.inv(R)
 C_world = -R_inv @ t  # camera center in world coordinates
 
 # === Load image ===
-img_path = "/home/sojeong/Documents/GitHub/PoseEstimation/HightMeasurement/ref/sj2/stand-sj-back.jpg"
+img_path = "/home/sojeong/Documents/GitHub/PoseEstimation/HightMeasurement/ref/sj/measuring.jpg"
 img_cv = cv2.imread(img_path)
 img_pil = Image.open(img_path).convert("RGB")
 

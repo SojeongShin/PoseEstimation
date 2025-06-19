@@ -5,16 +5,18 @@ import numpy as np
 
 # 설정값
 real_arm_length_mm = 260
-head_to_eye_offset_mm = 120
+head_to_eye_offset_mm = 110
 
 # 폴더 경로
-input_folder = '/home/sojeong/Documents/GitHub/PoseEstimation/HightMeasurement/ref/sy'
-output_folder = os.path.join(input_folder, 'prior_output')
+input_folder = '/Users/sojeongshin/Documents/GitHub/PoseEstimation/HightMeasurement/ref/sj'
+output_folder = os.path.join(input_folder, 'prior_output2')
 os.makedirs(output_folder, exist_ok=True)
 
 # MediaPipe 초기화
 mp_pose = mp.solutions.pose
 pose = mp_pose.Pose(static_image_mode=True)
+mp_drawing = mp.solutions.drawing_utils
+mp_drawing_styles = mp.solutions.drawing_styles
 
 # 모든 이미지 반복
 for filename in os.listdir(input_folder):
@@ -59,13 +61,22 @@ for filename in os.listdir(input_folder):
     estimated_length_mm = mp_y_diff * scale
     total_estimated_height_mm = estimated_length_mm + head_to_eye_offset_mm
 
-    # === 시각화
+    # === 좌표 변환
     h, w = image.shape[:2]
     eye_px = (int(landmarks[mp_pose.PoseLandmark.LEFT_EYE].x * w),
               int(landmarks[mp_pose.PoseLandmark.LEFT_EYE].y * h))
     foot_px = (int(landmarks[mp_pose.PoseLandmark.LEFT_FOOT_INDEX].x * w),
                int(landmarks[mp_pose.PoseLandmark.LEFT_FOOT_INDEX].y * h))
 
+    # === 전체 스켈레톤 시각화 (추가된 부분)
+    mp_drawing.draw_landmarks(
+        image,
+        results.pose_landmarks,
+        mp_pose.POSE_CONNECTIONS,  # 전체 관절 연결 정보
+        landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style()
+    )
+
+    # === 수직선 및 텍스트 (기존 그대로 유지)
     cv2.circle(image, eye_px, 6, (0, 255, 0), -1)
     cv2.circle(image, foot_px, 6, (0, 0, 255), -1)
     cv2.line(image, eye_px, foot_px, (255, 0, 0), 2)
@@ -77,4 +88,6 @@ for filename in os.listdir(input_folder):
     # === 저장
     save_path = os.path.join(output_folder, filename)
     cv2.imwrite(save_path, image)
+    print(f"{filename}: Prior model height:{total_estimated_height_mm:.1f} mm")
     print(f"✅ Saved: {save_path}")
+

@@ -7,11 +7,11 @@ import os
 import glob
 
 # === Load intrinsic & extrinsic parameters ===
-intrin = np.load("/home/sojeong/Documents/GitHub/PoseEstimation/HightMeasurement/cameraCali/intrinsic_calibration_result.npz")
+intrin = np.load("/Users/sojeongshin/Documents/GitHub/PoseEstimation/HightMeasurement/cameraCali/intrinsic_calibration_result.npz")
 K = intrin["K"]
 dist = intrin["dist"]
 
-extrin = np.load("/home/sojeong/Documents/GitHub/PoseEstimation/HightMeasurement/final_extrinsic_calibration.npz")
+extrin = np.load("/Users/sojeongshin/Documents/GitHub/PoseEstimation/HightMeasurement/final_extrinsic_calibration.npz")
 extrinsic_matrix = extrin["extrinsic_matrix"]
 R = extrinsic_matrix[:, :3]
 t = extrinsic_matrix[:, 3].reshape(3, 1)
@@ -25,8 +25,8 @@ model = deeplabv3_resnet50(weights=weights).eval()
 preprocess = weights.transforms()
 
 # === Paths ===
-input_dir = "/home/sojeong/Documents/GitHub/PoseEstimation/HightMeasurement/ref/jm"
-output_dir = os.path.join(input_dir, "output")
+input_dir = "/Users/sojeongshin/Documents/GitHub/PoseEstimation/HightMeasurement/ref/sy"
+output_dir = os.path.join(input_dir, "output3")
 os.makedirs(output_dir, exist_ok=True)
 
 # === Iterate over all .png files in input folder ===
